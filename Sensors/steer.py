@@ -3,16 +3,12 @@ import math
 from board import SCL, SDA
 import busio
 from Adafruit_PCA9685 import PCA9685
-#from Adafruit_GPIO import I2C
 import time
 
-#import RPi.GPIO as GPIO
-#GPIO.setmode(GPIO.BOARD)
 
 def initialize():
-   i2c_bus = busio.I2C(SCL, SDA)
    pca = PCA9685()
-   pca.set_pwm_freq(100)
+   pca.set_pwm_freq(60)
    return pca
 
 def steer(pca, angle):
@@ -20,13 +16,23 @@ def steer(pca, angle):
       angle = 220
    if angle < 0:
       angle = 0
-   duty = math.floor(((angle//180)*6553)+6553)
-   #pca.channels[7].duty_cycle = math.floor(duty)
+   duty = math.floor(((angle/180)*6553)+6553)
    print(duty)
-   pca.set_pwm(7, 0, 25000)
+   pca.set_pwm(7, 0, 40000)
 
 
-print("Hi")
 pca = initialize()
-print("Hi")
-steer(pca, 15)
+
+servo_min = 150 #hard right
+servo_max = 2000 #hard left
+servo_middle = 400 
+#math.floor((servo_max - servo_min)/2) #middle 
+print(servo_middle)
+
+while True: 
+    pca.set_pwm(7, 0, servo_min)
+    time.sleep(1)
+    pca.set_pwm(7, 0, servo_middle)
+    time.sleep(1)
+    pca.set_pwm(7, 0, servo_max)
+    time.sleep(1)
