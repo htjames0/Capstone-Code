@@ -6,33 +6,43 @@ from Adafruit_PCA9685 import PCA9685
 import time
 
 
-def initialize():
+def Servo_Initialize():
    pca = PCA9685()
-   pca.set_pwm_freq(60)
+   pca.set_pwm_freq(100)
    return pca
 
-def steer(pca, angle):
-   if angle > 220:
-      angle = 220
+def Wheel_Steer(pca, angle):
+   if angle > 180:
+      angle = 180
    if angle < 0:
       angle = 0
-   duty = math.floor(((angle/180)*6553)+6553)
-   print(duty)
-   pca.set_pwm(7, 0, 40000)
+   duty = math.floor(((angle/180)*270)+540)
+   pca.set_pwm(7, 0, duty)
 
 
-pca = initialize()
+pca = Servo_Initialize()
 
-servo_min = 150 #hard right
-servo_max = 2000 #hard left
-servo_middle = 400 
-#math.floor((servo_max - servo_min)/2) #middle 
+servo_min = 540 #hard right
+servo_max = 810 #hard left
+servo_middle = math.floor((servo_max - servo_min)/2) #middle
+
+print('The hard right PWM is 540')
+print('The hard left PWM is 810')
+print('The middle PWM is:')
 print(servo_middle)
 
-while True: 
-    pca.set_pwm(7, 0, servo_min)
+#pca.set_pwm(7,0, 0)
+while True:
+    #pca.set_pwm(7, 0, servo_middle)
+    Wheel_Steer(pca, 0)
     time.sleep(1)
-    pca.set_pwm(7, 0, servo_middle)
+    #pca.set_pwm(7, 0, servo_max)
+    Wheel_Steer(pca, 180)
     time.sleep(1)
-    pca.set_pwm(7, 0, servo_max)
-    time.sleep(1)
+
+
+#figuring out max and min PWM for servo
+#for i in range(540, 810, 10): 
+#    print(i)
+#    pca.set_pwm(7, 0, i)
+#    time.sleep(1)
