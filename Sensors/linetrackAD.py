@@ -37,16 +37,14 @@ while (start_time + args.tim > cur_time):
     cur_time = time.time()
     if(mesg_time + args.period < cur_time):
       mesg_time = cur_time
-      IR1 = mcp.read_adc(0) #read c0
-      IR2 = mcp.read_adc(1)
-      IR3 = mcp.read_adc(2)
-      IR4 = mcp.read_adc(3)
-      IR5 = mcp.read_adc(4)
-      IR6 = mcp.read_adc(5)
+      IR = [0]*5
+      for i in range(5): 
+        IR[i] = mcp.read_adc(i)
       t = round(cur_time- start_time,2)
-
-      print('| {0:>4} | {1:>4} | {2:>4} | {3:>4} | {4:>4} | {5:>4} | {6:>4} | {7:>4} |'.format(*values))
+      y = (0*IR[0] + 1000*IR[1] + 2000*IR[2] + 3000*IR[3] + 4000*IR[4])/(IR[0] + IR[1] + IR[2] + IR[3] + IR[4])
+      print('| {0:>4} | {1:>4} | {2:>4} | {3:>4} | {4:>4}'.format(*IR))
+      print(y)
       #print(f"{t}s:\tTMP={TMP_Val},\tRES={RES_Val}")
-      print(f"{t}\tRES={RES_Val}")
+      #print(f"{t}\tRES={RES_Val}")
 
 GPIO.cleanup()
