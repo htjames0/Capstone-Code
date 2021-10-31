@@ -14,24 +14,23 @@ def Servo_Initialize():
 
 def Motor_StartUp(pca):
     print('Starting Motor Start Up Sequence')
-    #Motor_Speed(pca, 0)
-    pca.set_pwm(11, 0, math.floor(.15*4095))
+    pca.set_pwm(0, 0, math.floor(.15*4095))
     print('Neutral')
     time.sleep(15)
 
-    pca.set_pwm(11, 0, math.floor(.2*4095))
+    pca.set_pwm(0, 0, math.floor(.2*4095))
     print('Forward')
     time.sleep(3)
 
-    pca.set_pwm(11, 0, math.floor(.15*4095))
+    pca.set_pwm(0, 0, math.floor(.15*4095))
     print('Neutral')
     time.sleep(3)
 
-    pca.set_pwm(11, 0, math.floor(.1*4095))
+    pca.set_pwm(0, 0, math.floor(.1*4095))
     print('Reverse')
     time.sleep(3)
 
-    pca.set_pwm(11, 0, math.floor(.15*4095))
+    pca.set_pwm(0, 0, math.floor(.15*4095))
     print('Neutral')
     time.sleep(3)
 
@@ -58,9 +57,9 @@ Motor_StartUp(pca)
 
 print('')
 print('Changing Speeds:')
-pca.set_pwm(11,0,math.floor(.25*4095))
+pca.set_pwm(0,0,math.floor(.25*4095))
 time.sleep(10)
-pca.set_pwm(11,0,math.floor(.15*4095))
+pca.set_pwm(0,0,math.floor(.15*4095))
 
 
 #Motor_Speed(pca, 0.5)
