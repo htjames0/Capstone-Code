@@ -1,14 +1,20 @@
 import time
 import argparse
+import math
+#AD/Linetrack
 import Adafruit_GPIO.SPI as SPI
 import Adafruit_MCP3008
+#Motor
+from adafruit_pca9685 import PCA9685
+import busio
+from board import SCL, SDA
+#Ultrasonic
 import RPi.GPIO as GPIO
 from mod4_funcs import ultrasonic_init as u_init
 from mod4_funcs import ultrasonic_read
-
 GPIO.setwarnings(False)
-GPIO.setmode(GPIO.BOARD)
-GPIO.setup(LED, GPIO.OUT, initial = GPIO.LOW) 
+#GPIO.setmode(GPIO.BOARD)
+#GPIO.setup(LED, GPIO.OUT, initial = GPIO.LOW) 
 
 
 # Hardware SPI configuration:
@@ -16,9 +22,9 @@ SPI_PORT   = 0
 SPI_DEVICE = 0
 mcp = Adafruit_MCP3008.MCP3008(spi=SPI.SpiDev(SPI_PORT, SPI_DEVICE))
 
-#Ultrasonic INPUT/OUTPUT PIN CONFIG
+#Ultrasonic INPUT/OUTPUT Pin configuration
 TRIG = 16
-ECHO - 18
+ECHO = 18
 
 #configuring argparse for commandline arguments
 parser = argparse.ArgumentParser(description='Data for this program.')
@@ -28,7 +34,7 @@ parser.add_argument('--ultr_delay', action='store', type=float, default = 0.1, h
 parser.add_argument('--debug', action='store_true', help='specifies if debug statements are printed')
 parser.add_argument('--KP', action = 'store', type = float, default = 0, help = 'the proportional control constant')
 parser.add_argument('--KI', action = 'store', type = float, default = 0, help = 'the integral control constant')
-parser.add_argument('--KD', action = 'store', type = float, defualt = 0, help = 'the derivative control constant')
+parser.add_argument('--KD', action = 'store', type = float, default = 0, help = 'the derivative control constant')
 args = parser.parse_args()
 
 if args.debug:
@@ -45,14 +51,12 @@ def readTrack(j=5):
 
 
 def weightedAvg(IR): 
-    #sum = 0 
-    #w_sum = 0
-    weights = list(range(0,len(IR)+1)*1000
-
-    #for i in range(len(IR)):
-    w =  weights[1]*IR[1] + weights[2]*IR[2] + weights[3]*IR[3] + weights[4]*IR[4] + weights[5]*IR[5]
-    s = IR[1] + IR[2] + IR[3] + IR[4] + IR[5]
-
+    s = 0 
+    w = 0
+    weights = list(range(0,len(IR)+1))
+    for i in range(len(IR)):
+        w =  w + weights[i]*1000*IR[i]
+        s =  s + IR[i]
     return w/s
 
 def PID(pos, prev_pos, Kp, Ki, Kd): 
@@ -65,8 +69,9 @@ def PID(pos, prev_pos, Kp, Ki, Kd):
     return power
 
 def Servo_Initialize(): 
-    pca = PCA9685()
-    pca.set_pwm+freq(100)
+    i2c = busio.I2C(SCL, SDA)
+    pca = PCA9685(i2c)
+    pca.frequency = 100
     return pca
 
 def Wheel_Steer(pca, angle):
@@ -74,44 +79,48 @@ def Wheel_Steer(pca, angle):
         angle = 180
     if angle < 0:
         angle = 0
-    duty = math.floor((angle/180)*270)+540)
-    pac.set_pwm(7, 0, duty)
+    duty = floor((angle/180)*270+540)
+    pca.set_pwm(7, 0, duty)
 
-
+#initialization
 pca = Servo_Initialize()
+u_init(TRIG, ECHO)
+
+
 
 start_time = time.time()
 cur_time = start_time
-mesg_time = start_time
+line_idx = 0
+ultr_idx = 0
 
 while (start_time + args.tim > cur_time):
-    time.sleep(0.01)
+    #time.sleep(0.01)
     cur_time = time.time()
-    if(mesg_time + args.period < cur_time):
-      mesg_time = cur_time
-      t = round(cur_time- start_time,2)
-
-      #ultrasonic read
-      dist = ultrasonic_read(TRIG, ECHO)
-
-      #linetrack read
+    if(start_time + line_idx*args.line_delay < cur_time):
+      line_idx += 1
       IR = readTrack()
       y = weightedAvg(IR)
-
-      #perform PID Logic and stop car if needed
-      #if dist < 100: 
-        #slow down motor
-
-      #if dist < 25: 
-        #stop motor
-
-      #else:          
-      y = PID(y, 1, 4, 0, 0)
-      Wheel_Steer(pca, y)
-
+      #dist = ultrasonic_read(TRIG, ECHO)
       print('| {0:>4} | {1:>4} | {2:>4} | {3:>4} | {4:>4}'.format(*IR))
       print(y)
-      #print(f"{t}s:\tTMP={TMP_Val},\tRES={RES_Val}")
-      #print(f"{t}\tRES={RES_Val}")
+    #if(start_time + ultr_idx*args.ultr_delay < cur_time):
+    #  ultr_idx += 1
+    #  mesg_time = cur_tim
+    #  t = round(cur_time - start_time, 2)
+      #dist = ultrasonic_read(TRIG, ECHO)
+      #print(dist)
 
-GPIO.cleanup()
+
+
+
+
+
+
+
+
+
+
+
+
+
+#GPIO.cleanup()

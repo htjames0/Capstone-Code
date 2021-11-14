@@ -2,7 +2,7 @@ import RPi.GPIO as GPIO
 import time
 import smbus		    #import SMBus module of I2C
 GPIO.setwarnings(False)     # Ignore warning for now
-GPIO.setmode(GPIO.BOARD)    # Use physical pin numberin
+#GPIO.setmode(GPIO.BOARD)    # Use physical pin numberin
 
 # ULTRASONIC FUNCTIONS
 def ultrasonic_init(Trigger, Echo):
