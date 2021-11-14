@@ -7,7 +7,7 @@ GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BOARD)
 
 #DEFINING PINS
-LED = 11 #GPIO 17
+#LED = 11 #GPIO 17
 
 GPIO.setup(LED, GPIO.OUT, initial = GPIO.LOW) 
 
@@ -21,6 +21,35 @@ args = parser.parse_args()
 if args.debug:
   print(f'arguments: {vars(args)}')
 
+
+#functions
+
+def readTrack(j=5):
+    IR = [0]*j
+    for i in range(0, j):
+        IR[i] = mcp.read_adc(i)
+    return IR
+
+
+def weightedAvg(IR): 
+    sum = 0 
+    w_sum = 0
+    weights = list(range(0,len(IR)+1)*1000
+
+    for i in range(0, len(IR)):
+        w_sum  = w_sum + weight[i]*IR[i]
+        sum = sum + IR[i]
+
+    return w_sum/sum
+
+def PID(pos, prev_pos, Kp, Ki, Kd): 
+    prop =  pos - 2000
+    derv = prop - prev_pos
+    inte += prop
+
+    power = prop * Kp +  inte * Ki + derv * Kd
+
+    return power
 
 # Hardware SPI configuration:
 SPI_PORT   = 0
@@ -37,11 +66,12 @@ while (start_time + args.tim > cur_time):
     cur_time = time.time()
     if(mesg_time + args.period < cur_time):
       mesg_time = cur_time
-      IR = [0]*5
-      for i in range(5): 
-        IR[i] = mcp.read_adc(i)
       t = round(cur_time- start_time,2)
-      y = (0*IR[0] + 1000*IR[1] + 2000*IR[2] + 3000*IR[3] + 4000*IR[4])/(IR[0] + IR[1] + IR[2] + IR[3] + IR[4])
+
+
+      IR = readTrack()
+      y = weightedAvg(IR)
+
       print('| {0:>4} | {1:>4} | {2:>4} | {3:>4} | {4:>4}'.format(*IR))
       print(y)
       #print(f"{t}s:\tTMP={TMP_Val},\tRES={RES_Val}")
