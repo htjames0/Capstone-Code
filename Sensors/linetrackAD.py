@@ -2,14 +2,15 @@ import time
 import argparse
 import Adafruit_GPIO.SPI as SPI
 import Adafruit_MCP3008
-import RPi.GPIO as GPIO
-GPIO.setwarnings(False)
-GPIO.setmode(GPIO.BOARD)
+import math
+#import RPi.GPIO as GPIO
+#GPIO.setwarnings(False)
+#GPIO.setmode(GPIO.BOARD)
 
 #DEFINING PINS
 #LED = 11 #GPIO 17
 
-GPIO.setup(LED, GPIO.OUT, initial = GPIO.LOW) 
+#GPIO.setup(LED, GPIO.OUT, initial = GPIO.LOW) 
 
 #configuring argparse for commandline arguments
 parser = argparse.ArgumentParser(description='Data for this program.')
@@ -26,21 +27,24 @@ if args.debug:
 
 def readTrack(j=5):
     IR = [0]*j
-    for i in range(0, j):
+    for i in range(j):
         IR[i] = mcp.read_adc(i)
     return IR
 
 
-def weightedAvg(IR): 
-    sum = 0 
-    w_sum = 0
-    weights = list(range(0,len(IR)+1)*1000
-
-    for i in range(0, len(IR)):
-        w_sum  = w_sum + weight[i]*IR[i]
-        sum = sum + IR[i]
-
-    return w_sum/sum
+#def weightedAvg(IR): 
+#    sum = 0 
+#    w_sum = 0
+#    weights = list(range(0,len(IR)+1)*1000
+#
+#    for i in range(0, len(IR)):
+#        w_sum  = w_sum + weight[i]*IR[i]
+#        sum = sum + IR[i]
+#
+#
+#
+#
+#    return w/s
 
 def PID(pos, prev_pos, Kp, Ki, Kd): 
     prop =  pos - 2000
@@ -67,14 +71,14 @@ while (start_time + args.tim > cur_time):
     if(mesg_time + args.period < cur_time):
       mesg_time = cur_time
       t = round(cur_time- start_time,2)
-
-
       IR = readTrack()
-      y = weightedAvg(IR)
-
-      print('| {0:>4} | {1:>4} | {2:>4} | {3:>4} | {4:>4}'.format(*IR))
+      w = 0*IR[0] + 1000*IR[1] + 2000*IR[2] + 3000*IR[3] + 4000*IR[4]
+      s = IR[0] + IR[1] + IR[2] + IR[3] + IR[4]
+      y = round(w/s,3) 
+      print('Y = ')
       print(y)
+      print('| {0:>4} | {1:>4} | {2:>4} | {3:>4} | {4:>4}'.format(*IR))
       #print(f"{t}s:\tTMP={TMP_Val},\tRES={RES_Val}")
       #print(f"{t}\tRES={RES_Val}")
 
-GPIO.cleanup()
+#GPIO.cleanup()
