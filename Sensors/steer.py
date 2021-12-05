@@ -33,11 +33,11 @@ print(servo_middle)
 
 #pca.set_pwm(7,0, 0)
 while True:
-    #pca.set_pwm(7, 0, servo_middle)
-    Wheel_Steer(pca, 0)
+    pca.set_pwm(7, 0, servo_middle)
+    #Wheel_Steer(pca, 0)
     time.sleep(1)
-    #pca.set_pwm(7, 0, servo_max)
-    Wheel_Steer(pca, 180)
+    pca.set_pwm(7, 0, servo_max)
+    #Wheel_Steer(pca, 180)
     time.sleep(1)
 
 

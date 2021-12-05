@@ -32,15 +32,13 @@ def Motor_Speed(pca, percent, channel = 11):
     print(percent)
 
 pca = Servo_Initialize()
-Motor_StartUp(pca)
+#Motor_StartUp(pca)
 
 print('')
 print('Changing Speeds:')
 Motor_Speed(pca, .156, 11)
 time.sleep(5)
-Motor_Speed(pca, .16, 11)
-#pca.channels[11].duty_cycle = math.floor(.17*65535)
+Motor_Speed(pca, .155, 11)
 time.sleep(5)
-#pca.channels[11].duty_cycle = math.floor(.15*65535)
-Motor_Speed(pca, .15, 11)
+Motor_Speed(pca, .150, 11)
 

@@ -1,4 +1,9 @@
 #!/usr/bin/env python
+import rospy
+from std_msgs.msg import Float64
+import picamera
+import adafruit_motor.servo 
+
 import math
 from board import SCL, SDA
 import busio
@@ -34,13 +39,37 @@ def Motor_Speed(pca, percent, channel = 11):
 pca = Servo_Initialize()
 Motor_StartUp(pca)
 
-print('')
-print('Changing Speeds:')
-Motor_Speed(pca, .156, 11)
-time.sleep(5)
-Motor_Speed(pca, .16, 11)
+#print('')
+#print('Changing Speeds:')
+#Motor_Speed(pca, .156, 11)
+
+
+def callback(data):
+   data.data = int(float(data.data))
+   if data.data >= 50: 
+      Motor_Speed(pca, 0.157, 11)
+   else: 
+      Motor_Speed(pca, 0.154, 11)
+
+   rospy.loginfo('Distance is %s', data.data)
+   rospy.loginfo('________________________')
+
+
+def listener():
+   rospy.init_node('motor_list', anonymous = True)
+   rospy.Subscriber('ultra_topic', Float64, callback)
+   rospy.spin()
+
+
+if __name__ == '__main__':
+   listener()
+
+
+
+#time.sleep(5)
+#Motor_Speed(pca, .16, 11)
 #pca.channels[11].duty_cycle = math.floor(.17*65535)
-time.sleep(5)
+#time.sleep(5)
 #pca.channels[11].duty_cycle = math.floor(.15*65535)
-Motor_Speed(pca, .15, 11)
+#Motor_Speed(pca, .15, 11)
 
