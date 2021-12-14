@@ -56,9 +56,9 @@ def readTrack2():
 
     offon = [0]*5
     for i in range(5):
-        if IR[i] > 10000:
+        if IR[i] > 15000:
             offon[i] = 0
-        if IR[i] < 10000:
+        if IR[i] < 15000:
             offon[i] = 1
     return offon, IR 
 
