@@ -205,6 +205,6 @@ include_directories(
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
 
-catkin_install_python(PROGRAMS scripts/linetrack.py scripts/line_listen.py
+catkin_install_python(PROGRAMS scripts/line_talk.py scripts/tillman_trial.py
    DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )

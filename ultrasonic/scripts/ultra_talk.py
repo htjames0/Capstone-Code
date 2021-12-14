@@ -1,13 +1,10 @@
 #!/usr/bin/env python
 
-#imports for Ultraonsic - could get rid of argparse
 import time
 import argparse
 import RPi.GPIO as GPIO
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BOARD)
-
-#imports for talker - could get rid of string
 import rospy
 from std_msgs.msg import Float64
 
@@ -54,13 +51,25 @@ ultrasonic_init(TRIG, ECHO)
 def talker():
    pub = rospy.Publisher('ultra_topic', Float64, queue_size=10)
    rospy.init_node('ultra_talk', anonymous=True)
-   rate = rospy.Rate(5) # 10hz
+   rate = rospy.Rate(10) # 10hz
+   
+   ITER_COUNT = 400
+   interval = 0.2
+   #DEBUG = False
+
+   #if "-debug" in sys.argv:
+   #   DEBUG = True
+
    while not rospy.is_shutdown():
-#      time.sleep(0.1)
-      dist = ultrasonic_read(TRIG, ECHO)  #distance reading using GPIO from Pi
-      rospy.loginfo(dist)
-      pub.publish(dist)
-      rate.sleep()
+      while ITER_COUNT > 0:
+         ITER_COUNT -= interval
+         time.sleep(0.00001)
+         dist = ultrasonic_read(TRIG, ECHO)  #distance reading using GPIO from Pi
+         #rospy.loginfo(dist)
+         print(dist)
+         pub.publish(dist)
+         rate.sleep()
+   GPIO.cleanup()
 
 if __name__ == '__main__':
    try: 
