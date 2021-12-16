@@ -1,4 +1,0 @@
-<launch>
-   <node name="linetrack" pkg-"linetrack" type="linetrack.py" output="screen"/ >
-   </node>
-</laucnch>
